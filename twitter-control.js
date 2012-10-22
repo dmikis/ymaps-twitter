@@ -4,8 +4,18 @@ ymaps.ready(function () {
 
     var jsonpDataProvider = {
 
+            /**
+             * Load data by JSONP.
+             *
+             * @function
+             * @param {String} url Data url.
+             * @param {Function} callback Function to be called when data'll be loaded.
+             * @param {Object} [options] Options.
+             * @param {Object} [options.callbackCtx = window] Callback's execution context.
+             * @param {Number} [options.timeout = 3000] Request's timeout.
+             * @returns {Object} Hash with `abort` method.
+             */
             getData: function (url, callback, options) {
-                console.log('jsonpDataProvider: get "' + url + '"');
                 options = ymaps.util.extend({
                     callbackCtx: window,
                     timeout: 3000
@@ -13,11 +23,14 @@ ymaps.ready(function () {
 
                 var callbackName = 'jsonp_' + Math.floor(1e8 * Math.random()),
                     scriptNode = document.createElement('script'),
-                    timeoutHandler = setTimeout(function () {
-                        callback.call(options.callbackCtx, null);
+                    abortFn = function (callCallback) {
+                        if (callCallback === true) {
+                            callback.call(options.callbackCtx, null);
+                        }
                         delete window[callbackName];
                         HEAD_NODE.removeChild(scriptNode);
-                    }, options.timeout);
+                    },
+                    timeoutHandler = setTimeout(abortFn, options.timeout, true);
 
                 scriptNode.setAttribute('src', [
                     url,
@@ -35,6 +48,8 @@ ymaps.ready(function () {
                 };
 
                 HEAD_NODE.appendChild(scriptNode);
+
+                return {abort: abortFn};
             }
         };
 
