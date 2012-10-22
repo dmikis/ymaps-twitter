@@ -4,5 +4,5 @@ ymaps.ready(function () {
             zoom: 7
         });
 
-    map.controls.add(new TwitterControl());
+    map.behaviors.enable('dmikis#twitter');
 });

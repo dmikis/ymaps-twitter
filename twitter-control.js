@@ -231,7 +231,7 @@ ymaps.ready(function () {
         }
     });
 
-    var TwitterControl = function (options) {
+    var TwitterBehavior = function (options) {
             this.events = new ymaps.event.Manager();
 
             this.tweets = new IndexedGeoObjectCollection(null, {
@@ -242,10 +242,21 @@ ymaps.ready(function () {
             this._map = null;
         };
 
-    ymaps.util.extend(TwitterControl.prototype, {
+    ymaps.util.extend(TwitterBehavior.prototype, {
+
+        enable: function () {
+            this._isEnabled = true;
+        },
+
+        disable: function () {
+            this._isEnabled = false;
+        },
+
+        isEnabled: function () {
+            return this._isEnabled;
+        },
 
         setParent: function (parent) {
-            console.log('TwitterControl: setParent', parent);
             if (this._parent !== parent) {
                 if (this._parent) {
                     this._parent.events.remove('mapchange', this._onMapChange, this);
@@ -303,6 +314,8 @@ ymaps.ready(function () {
         }
     });
 
+    ymaps.behavior.storage.add('dmikis#twitter', TwitterBehavior);
+
     ymaps.layout.storage.add('dmikis#tweet', ymaps.templateLayoutFactory.createClass([
         '<div class="tweet">',
             '<h3 class="tweet_author">',
@@ -357,6 +370,4 @@ ymaps.ready(function () {
     var styleNode = document.createElement('style');
     styleNode.innerHTML = styles;
     HEAD_NODE.appendChild(styleNode);
-
-    window.TwitterControl = TwitterControl;
 });
