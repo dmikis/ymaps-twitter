@@ -238,6 +238,10 @@ ymaps.ready(function () {
                 balloonContentLayout: 'dmikis#tweet'
             });
 
+            window.shed = this._scheduler = new TweetsDownloadScheduler({
+                twitterSearchQuery: ''
+            });
+
             this._parent = null;
             this._map = null;
         };
@@ -286,31 +290,40 @@ ymaps.ready(function () {
             console.log('TwitterControl: _onMapChange', oldMap, newMap);
 
             if (oldMap) {
+                this._scheduler.events.remove('tweetsloaded', this._onTweetsLoaded, this);
                 oldMap.events.remove('boundschange', this._onMapBoundsChange, this);
                 oldMap.geoObjects.remove(this.tweets);
             }
             if (newMap) {
                 newMap.events.add('boundschange', this._onMapBoundsChange, this);
+                this._scheduler.options.set('twitterGeocodeQuery', [
+                        newMap.getCenter().join(),
+                        Math.floor(ymaps.coordSystem.geo.distance(newMap.getBounds()[0], newMap.getBounds()[1]) * 5e-4) + 'km'
+                    ].join());
+                this._scheduler.events.add('tweetsloaded', this._onTweetsLoaded, this);
                 newMap.geoObjects.add(this.tweets);
             }
             this._map = newMap;
         },
 
         _onMapBoundsChange: function () {
-            console.log('TwitterControl: map\'s bounds changed');
-            twitterDataProvider.getTweets(
-                '', [
+            console.log('dmikis#twitter: map\'s bounds changed');
+            this._scheduler.options.set('twitterGeocodeQuery', [
                     this._map.getCenter().join(),
                     Math.floor(ymaps.coordSystem.geo.distance(map.getBounds()[0], map.getBounds()[1]) * 5e-4) + 'km'
-                ].join(),
-                function (tweets) {
-                    tweets.forEach(function (tweet) {
-                        if (!this.tweets.getByIndex(tweet.id)) {
-                            this.tweets.add(new GeoTweet(tweet), tweet.id);
-                        }
-                    }, this);
-                },
-                {callbackCtx: this});
+                ].join());
+        },
+
+        _onTweetsLoaded: function (e) {
+            var tweets = e.get('tweets');
+
+            console.log('dmikis#twitter: ' + tweets.length + ' tweets loaded');
+
+            e.get('tweets').forEach(function (tweet) {
+                if (!this.tweets.getByIndex(tweet.id)) {
+                    this.tweets.add(new GeoTweet(tweet), tweet.id);
+                }
+            }, this);
         }
     });
 
