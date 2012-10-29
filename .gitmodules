@@ -1,0 +1,3 @@
+[submodule "tools/probe"]
+	path = tools/probe
+	url = git://github.com/dmikis/probe.git
