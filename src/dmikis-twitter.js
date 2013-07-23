@@ -1,7 +1,4 @@
 ymaps.ready(function () {
-
-
-
     ymaps.behavior.storage.add('dmikis#twitter', require('./behavior'));
     ymaps.layout.storage.add('dmikis#tweet', require('./layout'));
 

@@ -1,3 +1,5 @@
+/** @module jsonp */
+
 var HEAD_NODE = document.getElementsByTagName('head')[0];
 
 /**

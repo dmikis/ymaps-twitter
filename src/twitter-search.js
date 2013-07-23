@@ -1,3 +1,5 @@
+/** @module twitter-search */
+
 /**
  * Load tweets from Twitter's Search API.
  *
@@ -27,7 +29,7 @@ module.exports = function (query, geocode, callback, options) {
             .replace('%g', geocode)
             .replace('%n', options.resultsNum);
 
-    return require('./jsonp')(url, function (data) {
+    return require('./utils/jsonp')(url, function (data) {
         callback.call(
             options.callbackCtx,
             options.tweetsWithGeoInfoOnly ?

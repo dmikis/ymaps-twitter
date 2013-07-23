@@ -1,3 +1,5 @@
+/** @module scheduler */
+
 var Scheduler = function (options) {
     this.events = new ymaps.event.Manager({
         controllers: [{

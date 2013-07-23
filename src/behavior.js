@@ -1,7 +1,13 @@
+/** @module behavior */
+
 var Scheduler = require('./scheduler');
 var GeoTweet = require('./geo-tweet');
 var IndexedCollection = require('./indexed-collection');
 
+/**
+ * @implements ymaps.IBehavior
+ * @param {Object} [options] Behaviors options.
+ */
 var Behavior = function (options) {
         this.events = new ymaps.event.Manager();
 
@@ -83,8 +89,6 @@ ymaps.util.extend(Behavior.prototype, {
     },
 
     _onTweetsLoaded: function (e) {
-        var tweets = e.get('tweets');
-
         e.get('tweets').forEach(function (tweet) {
             if (!this.tweets.getByIndex(tweet.id)) {
                 this.tweets.add(new GeoTweet(tweet), tweet.id);
